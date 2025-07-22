@@ -20,6 +20,14 @@
   ],
   "author": "Guilherme D'Amato",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gbrugger/fastify-multilingual.git"
+  },
+  "bugs": {
+    "url": "https://github.com/gbrugger/fastify-multilingual/issues"
+  },
+  "homepage": "https://github.com/gbrugger/fastify-multilingual#readme",
   "devDependencies": {
     "@eslint/js": "^9.31.0",
     "@tsconfig/node20": "^20.1.6",
