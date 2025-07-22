@@ -1,0 +1,13 @@
+{
+  "extends":"../tsconfig.json",
+  "exclude": [],
+  "references": [
+        { "path": "../tsconfig.json" }
+  ],
+  "include": ["./**/*.ts"],
+  "compilerOptions": {
+    "composite": true,
+    "rootDir": ".",
+    "outDir": "."
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "name": "fastify-multilingual",
+  "version": "0.1.0",
+  "description": "Fastify plugin to decorate the request with different translations, based on available Polyglot.js phrases.",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc --build",
+    "build:test": "tsc --build test/tsconfig.json",
+    "build:clean": "tsc --build --clean && tsc --build test/tsconfig.json --clean",
+    "test": "npm run build && npm run build:test && node --test test/**/*.test.js"
+  },
+  "keywords": [
+    "fastify",
+    "polyglot",
+    "i18n",
+    "translate",
+    "pluralize",
+    "plugin"
+  ],
+  "author": "Guilherme D'Amato",
+  "license": "MIT",
+  "devDependencies": {
+    "@eslint/js": "^9.31.0",
+    "@tsconfig/node20": "^20.1.6",
+    "@types/node": "^24.0.15",
+    "@types/node-polyglot": "^2.5.0",
+    "@typescript-eslint/eslint-plugin": "^8.37.0",
+    "@typescript-eslint/parser": "^8.37.0",
+    "eslint": "^9.31.0",
+    "fastify": "^5.4.0",
+    "globals": "^16.3.0",
+    "neostandard": "^0.12.2",
+    "typescript": "^5.8.3",
+    "undici-types": "^7.12.0"
+  },
+  "dependencies": {
+    "fastify-plugin": "^5.0.1",
+    "node-polyglot": "^2.6.0"
+  },
+  "files": [
+    "dist"
+  ]
+}

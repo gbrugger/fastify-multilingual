@@ -1,0 +1,16 @@
+{
+  "name": "Node.js Typescript Dev Container",
+  "build": { "dockerfile": "Dockerfile" },
+  "runArgs": ["--name", "fastify_multilingual_devcontainer", "--network=host"],
+  "postCreateCommand": "cd /workspaces/fastify-multilingual && npm install",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "visualstudioexptteam.vscodeintellicode",
+        "humao.rest-client",
+        "ms-vscode.js-debug"
+      ]
+    }
+  }
+}
