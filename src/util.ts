@@ -1,5 +1,8 @@
+import createError from '@fastify/error';
 import { readdir } from 'fs/promises';
 import { basename, extname, join } from 'path';
+
+type LocaleArray = readonly string[] | null | undefined;
 
 /**
  * Loads dictionary files from a directory and returns them as messages object.
@@ -32,8 +35,11 @@ export const loadDictionaries = async (dictionaryPath: string): Promise<Record<s
         console.warn(`Failed to load dictionary file ${file}:`, error);
       }
     }
-  } catch (error) {
-    throw new Error(`Failed to read dictionary directory ${dictionaryPath}: ${error}`);
+  } catch (error: unknown) {
+    const cause = error instanceof Error ? error : new Error(String(error));
+    const DirectoryReadError = createError<[string, { cause: Error }]>('FST_MULTILINGUAL_NO_DICTIONARY', 'Failed to read dictionary directory %s.');
+
+    throw new DirectoryReadError(dictionaryPath, { cause });
   }
 
   return messages;
@@ -48,7 +54,7 @@ export const loadDictionaries = async (dictionaryPath: string): Promise<Record<s
  * @param {string[]} availableLocales - Array of available locales to match against (e.g., ['en-US', 'fr-FR', 'es-ES'])
  * @returns {string|null} The best matching available locale in order of preferredLocales, or null if no match found
  */
-export const findLocale = (preferredLocales: readonly any[] | null | undefined, availableLocales: readonly any[] | null | undefined): string | null => {
+export const findLocale = (preferredLocales: LocaleArray, availableLocales: LocaleArray): string | null => {
   // Input validation
   if (
     !preferredLocales ||

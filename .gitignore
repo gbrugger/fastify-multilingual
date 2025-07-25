@@ -69,3 +69,8 @@ dist
 *.test.js
 *.test.d.ts
 *.test.js.map
+test/i18n/*.js
+test/i18n/*.js.map
+test/i18n/*.d.ts
+
+CLAUDE.md

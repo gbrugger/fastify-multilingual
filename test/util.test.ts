@@ -4,8 +4,23 @@ import { join } from 'node:path';
 import { test } from 'node:test';
 import { findLocale, loadDictionaries } from '../dist/util.js';
 
+process.setMaxListeners(0);
+
+// Type definitions for testing
+type LocaleArray = readonly string[] | null | undefined;
+type Dictionary = Record<string, Record<string, string>>;
+
+// Helper function to safely test invalid inputs without type warnings
+function testFindLocaleWithInvalidInput (
+  preferred: unknown,
+  available: unknown
+): string | null {
+  return findLocale(preferred as LocaleArray, available as LocaleArray);
+}
+
 // findLocale
 test('findLocale - exact match cases', async (t) => {
+  t.plan(3);
   await t.test('should return exact match when available', () => {
     const preferred = ['en-US', 'fr-FR'];
     const available = ['es-ES', 'en-US', 'de-DE'];
@@ -29,6 +44,7 @@ test('findLocale - exact match cases', async (t) => {
 });
 
 test('findLocale - language fallback cases', async (t) => {
+  t.plan(5);
   await t.test(
     'should fallback to language-only match when no exact match',
     () => {
@@ -75,6 +91,7 @@ test('findLocale - language fallback cases', async (t) => {
 });
 
 test('findLocale - null/undefined input cases', async (t) => {
+  t.plan(5);
   await t.test('should return null for null preferredLocales', () => {
     const result = findLocale(null, ['en-US', 'fr-FR']);
     assert.strictEqual(result, null);
@@ -102,6 +119,7 @@ test('findLocale - null/undefined input cases', async (t) => {
 });
 
 test('findLocale - empty array cases', async (t) => {
+  t.plan(3);
   await t.test('should return null for empty preferredLocales', () => {
     const result = findLocale([], ['en-US', 'fr-FR']);
     assert.strictEqual(result, null);
@@ -119,51 +137,58 @@ test('findLocale - empty array cases', async (t) => {
 });
 
 test('findLocale - non-array input cases', async (t) => {
+  t.plan(4);
   await t.test('should return null for non-array preferredLocales', () => {
-    const result = findLocale('en-US' as any, ['en-US', 'fr-FR']);
+    const invalidInput = 'en-US';
+    const result = testFindLocaleWithInvalidInput(invalidInput, ['en-US', 'fr-FR']);
     assert.strictEqual(result, null);
   });
 
   await t.test('should return null for non-array availableLocales', () => {
-    const result = findLocale(['en-US', 'fr-FR'], 'en-US' as any);
+    const invalidInput = 'en-US';
+    const result = testFindLocaleWithInvalidInput(['en-US', 'fr-FR'], invalidInput);
     assert.strictEqual(result, null);
   });
 
   await t.test('should return null for object preferredLocales', () => {
-    const result = findLocale({ locale: 'en-US' } as any, ['en-US', 'fr-FR']);
+    const invalidInput = { locale: 'en-US' };
+    const result = testFindLocaleWithInvalidInput(invalidInput, ['en-US', 'fr-FR']);
     assert.strictEqual(result, null);
   });
 
   await t.test('should return null for number inputs', () => {
-    const result = findLocale(123 as any, ['en-US', 'fr-FR']);
+    const invalidInput = 123;
+    const result = testFindLocaleWithInvalidInput(invalidInput, ['en-US', 'fr-FR']);
     assert.strictEqual(result, null);
   });
 });
 
 test('findLocale - mixed data type arrays', async (t) => {
+  t.plan(3);
   await t.test('should skip non-string entries in preferredLocales', () => {
     const preferred = [123, 'en-US', null, 'fr-FR', undefined];
     const available = ['es-ES', 'en-US', 'de-DE'];
-    const result = findLocale(preferred, available);
+    const result = testFindLocaleWithInvalidInput(preferred, available);
     assert.strictEqual(result, 'en-US');
   });
 
   await t.test('should skip non-string entries in availableLocales', () => {
     const preferred = ['en-US', 'fr-FR'];
     const available = [123, 'es-ES', null, 'en-US', undefined];
-    const result = findLocale(preferred, available);
+    const result = testFindLocaleWithInvalidInput(preferred, available);
     assert.strictEqual(result, 'en-US');
   });
 
   await t.test('should handle all non-string entries gracefully', () => {
     const preferred = [123, null, undefined, {}];
     const available = [456, null, undefined, []];
-    const result = findLocale(preferred, available);
+    const result = testFindLocaleWithInvalidInput(preferred, available);
     assert.strictEqual(result, null);
   });
 });
 
 test('findLocale - no match cases', async (t) => {
+  t.plan(2);
   await t.test(
     'should return null when no exact or language match exists',
     () => {
@@ -186,6 +211,7 @@ test('findLocale - no match cases', async (t) => {
 });
 
 test('findLocale - complex matching scenarios', async (t) => {
+  t.plan(4);
   await t.test('should handle multiple language variants correctly', () => {
     const preferred = ['en-AU', 'en-CA', 'en-US'];
     const available = ['fr-FR', 'en', 'es-ES'];
@@ -219,6 +245,7 @@ test('findLocale - complex matching scenarios', async (t) => {
 });
 
 test('findLocale - error handling', async (t) => {
+  t.plan(6);
   await t.test(
     'should return null and not throw on malformed locale strings',
     () => {
@@ -273,6 +300,7 @@ test('findLocale - error handling', async (t) => {
 
 // loadDictionaries
 test('loadDictionaries - success cases', async (t) => {
+  t.plan(5);
   const testDir = join(process.cwd(), 'test-dictionaries');
 
   t.beforeEach(async () => {
@@ -285,27 +313,28 @@ test('loadDictionaries - success cases', async (t) => {
   // });
 
   await t.test('should load single dictionary file with default export', async () => {
-    const dutchContent = `
+    const dutchContent: string = `
     export default { 
       hello: "Hallo", 
       goodbye: "Tot ziens"
     };`;
     await writeFile(join(testDir, 'dutch.js'), dutchContent);
 
-    const result = await loadDictionaries(testDir);
+    const result: Dictionary = await loadDictionaries(testDir);
 
-    assert.deepStrictEqual(result, {
+    const expected: Dictionary = {
       dutch: { hello: 'Hallo', goodbye: 'Tot ziens' }
-    });
+    };
+    assert.deepStrictEqual(result, expected);
   });
 
   await t.test('should load multiple dictionary files with phrases export', async () => {
-    const frContent = `
+    const frContent: string = `
     export const phrases = { 
       hello: "Bonjour" 
     };`;
 
-    const deContent = `
+    const deContent: string = `
     export const phrases = { 
       hello: "Hallo" 
     };`;
@@ -313,12 +342,13 @@ test('loadDictionaries - success cases', async (t) => {
     await writeFile(join(testDir, 'fr.js'), frContent);
     await writeFile(join(testDir, 'de.js'), deContent);
 
-    const result = await loadDictionaries(testDir);
+    const result: Dictionary = await loadDictionaries(testDir);
 
-    assert.deepStrictEqual(result, {
+    const expected: Dictionary = {
       fr: { hello: 'Bonjour' },
       de: { hello: 'Hallo' }
-    });
+    };
+    assert.deepStrictEqual(result, expected);
   });
 
   await t.test('should ignore non-js files', async () => {
@@ -351,6 +381,7 @@ test('loadDictionaries - success cases', async (t) => {
 });
 
 test('loadDictionaries - error handling', async (t) => {
+  t.plan(8);
   const testDir = join(process.cwd(), 'test-dictionaries');
 
   t.beforeEach(async () => {
@@ -358,9 +389,9 @@ test('loadDictionaries - error handling', async (t) => {
     await mkdir(testDir, { recursive: true });
   });
 
-  t.afterEach(async () => {
-    await rm(testDir, { recursive: true, force: true });
-  });
+  // t.afterEach(async () => {
+  //   await rm(testDir, { recursive: true, force: true });
+  // });
 
   await t.test('should throw error for non-existent directory', async () => {
     const nonExistentDir = join(process.cwd(), 'non-existent-directory');
