@@ -1,49 +1,4 @@
-import createError from '@fastify/error';
-import { readdir } from 'fs/promises';
-import { basename, extname, join } from 'path';
-
 type LocaleArray = readonly string[] | null | undefined;
-
-/**
- * Loads dictionary files from a directory and returns them as messages object.
- * Scans for .js files and imports them expecting default exports or named exports for "phrases".
- * The resulting message object will match the filename without extension (eg: "en", "it", "pt-BR").
- *
- * @param {string} dictionaryPath - Path to the directory containing dictionary files
- * @returns {Promise<Record<string, Record<string, string>>>} Object with locale keys and their phrase dictionaries
- */
-export const loadDictionaries = async (dictionaryPath: string): Promise<Record<string, Record<string, string>>> => {
-  const messages: Record<string, Record<string, string>> = {};
-
-  try {
-    const files = await readdir(dictionaryPath);
-    const jsFiles = files.filter(file => extname(file) === '.js');
-
-    for (const file of jsFiles) {
-      const locale = basename(file, '.js');
-      const filePath = join(dictionaryPath, file);
-
-      try {
-        const module = await import(filePath);
-
-        if (module.default) {
-          messages[locale] = module.default;
-        } else if (module.phrases) {
-          messages[locale] = module.phrases;
-        }
-      } catch (error) {
-        console.warn(`Failed to load dictionary file ${file}:`, error);
-      }
-    }
-  } catch (error: unknown) {
-    const cause = error instanceof Error ? error : new Error(String(error));
-    const DirectoryReadError = createError<[string, { cause: Error }]>('FST_MULTILINGUAL_NO_DICTIONARY', 'Failed to read dictionary directory %s.');
-
-    throw new DirectoryReadError(dictionaryPath, { cause });
-  }
-
-  return messages;
-};
 
 /**
  * Finds the best matching locale from available locales based on user preferences.

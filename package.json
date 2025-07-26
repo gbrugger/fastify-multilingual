@@ -9,7 +9,7 @@
     "build": "tsc --build",
     "build:test": "tsc --build test/tsconfig.json",
     "build:clean": "tsc --build --clean && tsc --build test/tsconfig.json --clean",
-    "test": "npm run build && npm run build:test && node --test test/**/plugin.test.js"
+    "test": "npm run build && npm run build:test && node --test test/**/*.test.js"
   },
   "keywords": [
     "fastify",
