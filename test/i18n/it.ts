@@ -1,5 +1,7 @@
+import { NestedPhrases } from '../../index.js';
+
 // Default export
-const phrases: Record<string, string> = {
+const phrases: NestedPhrases = {
   hi: 'Ciao',
   not_found: 'Pagina non trovata'
 };

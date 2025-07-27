@@ -1,4 +1,4 @@
-import { NestedPhrases } from '../../dist/plugin.js';
+import { NestedPhrases } from '../../index.js';
 
 // Named export
 export const phrases: NestedPhrases = {

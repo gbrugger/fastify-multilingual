@@ -1,6 +1,8 @@
+import { NestedPhrases } from '../../index.js';
+
 // Named export
 // Missing not_found key
 // Best match for 'pt'
-export const phrases: Record<string, string> = {
+export const phrases: NestedPhrases = {
   hi: 'Hola',
 };

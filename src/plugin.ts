@@ -27,9 +27,7 @@ interface MultilingualPluginOptions extends FastifyPluginOptions {
 }
 
 // @TODO:
-// Write examples in @example/ folder
 // fix index.js
-// fix tsconfig.json to separate test compilations
 // Write README.md with fastify-cli
 // Setup CI with Github Actions
 

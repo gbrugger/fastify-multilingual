@@ -1,4 +1,4 @@
-import { NestedPhrases } from '../../dist/plugin.js'; // fastify-multilingual
+import { NestedPhrases } from '../../index.js'; // fastify-multilingual
 
 // Named export
 export const phrases: NestedPhrases = {

@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import { NestedPhrases } from '../../dist/plugin.js';
+import { NestedPhrases } from '../../index.js';
 import { phrases as en_GB } from './en-GB.js';
 import { phrases as en } from './en.js';
 import { phrases as es } from './es.js';
