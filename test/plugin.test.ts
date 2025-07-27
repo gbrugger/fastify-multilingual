@@ -402,4 +402,132 @@ test('plugin - Configuration Edge Cases', async t => {
   });
 });
 
-// @TODO: Create another app to add a test where the plugin is registered twice.
+test('plugin - Double Registration', async t => {
+  t.plan(2);
+
+  await t.test('should handle plugin registered twice in different contexts', async () => {
+    const { default: fastify } = await import('fastify');
+    const app = fastify({ logger });
+    t.after(() => app.close());
+
+    // Register the plugin first time with English default
+    await app.register(async function (fastify) {
+      await fastify.register(import('../index.js'), {
+        multilingual: {
+          phrases,
+          defaultLocale: 'en'
+        }
+      });
+
+      // Route in English context
+      fastify.get('/en-context', async (request) => {
+        return {
+          hi: request.polyglot().t('hi'),
+          not_found: request.polyglot().t('not_found')
+        };
+      });
+    });
+
+    // Register the plugin second time with Italian default
+    await app.register(async function (fastify) {
+      await fastify.register(import('../index.js'), {
+        multilingual: {
+          phrases,
+          defaultLocale: 'it'
+        }
+      });
+
+      // Route in Italian context
+      fastify.get('/it-context', async (request) => {
+        return {
+          hi: request.polyglot().t('hi'),
+          not_found: request.polyglot().t('not_found')
+        };
+      });
+    });
+
+    await app.ready();
+
+    // Test English context with no accept-language (should use English default)
+    const enResponse = await app.inject({
+      method: 'GET',
+      url: '/en-context',
+    });
+    assert.strictEqual(enResponse.statusCode, 200);
+    assert.deepStrictEqual(enResponse.json(), {
+      hi: 'Hi',
+      not_found: 'Page not found'
+    });
+
+    // Test Italian context with no accept-language (should use Italian default)
+    const itResponse = await app.inject({
+      method: 'GET',
+      url: '/it-context',
+    });
+    assert.strictEqual(itResponse.statusCode, 200);
+    assert.deepStrictEqual(itResponse.json(), {
+      hi: 'Ciao',
+      not_found: 'Pagina non trovata'
+    });
+  });
+
+  await t.test('should handle plugin registered twice on same instance without affecting original behavior', async () => {
+    const { default: fastify } = await import('fastify');
+    const app = fastify({ logger });
+    t.after(() => app.close());
+
+    // Register the plugin first time with English default
+    await app.register(import('../index.js'), {
+      multilingual: {
+        phrases,
+        defaultLocale: 'en'
+      }
+    });
+
+    // Register the plugin second time with Italian default on the same instance
+    await app.register(import('../index.js'), {
+      multilingual: {
+        phrases,
+        defaultLocale: 'it'
+      }
+    });
+
+    // Add a route to test the multilingual functionality
+    app.get('/test', async (request) => {
+      return {
+        hi: request.polyglot().t('hi'),
+        not_found: request.polyglot().t('not_found')
+      };
+    });
+
+    await app.ready();
+
+    // Test that the original English behavior is preserved
+    const enResponse = await app.inject({
+      method: 'GET',
+      url: '/test',
+      headers: {
+        'accept-language': 'en'
+      }
+    });
+    assert.strictEqual(enResponse.statusCode, 200);
+    assert.deepStrictEqual(enResponse.json(), {
+      hi: 'Hi',
+      not_found: 'Page not found'
+    });
+
+    // Test that Italian still works
+    const itResponse = await app.inject({
+      method: 'GET',
+      url: '/test',
+      headers: {
+        'accept-language': 'it'
+      }
+    });
+    assert.strictEqual(itResponse.statusCode, 200);
+    assert.deepStrictEqual(itResponse.json(), {
+      hi: 'Ciao',
+      not_found: 'Pagina non trovata'
+    });
+  });
+});
