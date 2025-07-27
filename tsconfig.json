@@ -1,19 +1,15 @@
 {
-  "extends": "@tsconfig/node20/tsconfig.json",
-  "include": ["src/**/*.ts"],
-  "compilerOptions": {
-    "noEmit": false,
-    "composite": true,
-    "rootDir": "src",
-    "outDir": "dist",
-    "sourceMap": true,
-    "removeComments": true,
-    "forceConsistentCasingInFileNames": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "exactOptionalPropertyTypes": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "noUncheckedIndexedAccess": true,
-  }
+    "files": [],
+    "include": [],
+    "references": [
+        {
+            "path": "./test"
+        },
+        {
+            "path": "./example"
+        },
+        {
+            "path": "./tsconfig-src.json"
+        },
+    ]
 }

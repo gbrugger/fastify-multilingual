@@ -1,9 +1,15 @@
 import { FastifyInstance, FastifyPluginOptions, FastifyRequest } from 'fastify';
 import Polyglot from 'node-polyglot';
+import pkg from 'process-warning';
 import { findLocale } from './util.js';
 
+const { createWarning } = pkg;
+
 type PolyglotGetter = () => Polyglot;
-type Dictionary = Record<string, Record<string, string>>;
+
+type NestedPhrases = {
+  [key: string]: string | NestedPhrases;
+};
 
 declare module 'fastify' {
   interface FastifyRequest {
@@ -15,36 +21,48 @@ declare module 'fastify' {
 
 interface MultilingualPluginOptions extends FastifyPluginOptions {
   multilingual : {
-    phrases: Dictionary;
+    phrases: NestedPhrases;
     defaultLocale: string | null;
   }
 }
 
 // @TODO:
-// Warning for options unset
 // Write examples in @example/ folder
+// fix index.js
+// fix tsconfig.json to separate test compilations
 // Write README.md with fastify-cli
 // Setup CI with Github Actions
 
-const fastifyMultilingual = async (fastify: FastifyInstance, options: MultilingualPluginOptions) => {
+const fastifyMultilingual = async (fastify: FastifyInstance, options: MultilingualPluginOptions): Promise<void> => {
+  // Empty, ultimate fallback instance (returns keys as messages)
+  const polyglot = new Polyglot({ phrases: {} as NestedPhrases });
+
+  if (!fastify.hasRequestDecorator('polyglot')) {
+    fastify.decorateRequest('polyglot', () => polyglot);
+  }
+
   // Load dictionaries from the specified directory
   const phrases = options.multilingual.phrases;
 
-  // Empty, ultimate fallback instance (returns keys as messages)
-  const polyglot = new Polyglot({ phrases: {} as Dictionary });
-
-  if (!fastify.hasReplyDecorator('polyglot')) {
-    fastify.decorateRequest('polyglot', () => polyglot);
+  if (Object.keys(phrases).length === 0) {
+    const warning = createWarning({
+      name: 'FastifyMultilingualNoPhrases',
+      code: 'FST_ML_WARN_NO_PHRASES',
+      message: 'No phrases provided to fastify-multilingual. Will return keys.'
+    });
+    warning();
   }
 
   const availableLocales = Object.keys(phrases)
     .map((key) => key.replace('_', '-'))
     .join(',');
-  fastify.decorateRequest('availableLocales', availableLocales);
+  if (!fastify.hasRequestDecorator('availableLocales')) {
+    fastify.decorateRequest('availableLocales', availableLocales);
+  }
 
   Object.entries(phrases).forEach(([localeKey, phrases]) => {
     const locale = localeKey.replace('_', '-');
-    if (!fastify.hasReplyDecorator(`polyglot-${locale}`)) {
+    if (!fastify.hasRequestDecorator(`polyglot-${locale}`)) {
       const polyglot = new Polyglot({
         phrases,
         locale,
@@ -88,7 +106,7 @@ const fastifyMultilingual = async (fastify: FastifyInstance, options: Multilingu
   });
 };
 
-export type { Dictionary };
+export type { NestedPhrases };
 
 export default fastifyMultilingual;
 export { fastifyMultilingual };

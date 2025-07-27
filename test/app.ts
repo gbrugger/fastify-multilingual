@@ -1,12 +1,10 @@
-'use strict';
+import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 
-import { FastifyInstance, FastifyPluginOptions, FastifyReply, FastifyRequest } from 'fastify';
-
-import fp from 'fastify-plugin';
+import fastifyPlugin from 'fastify-plugin';
 import Polyglot from 'node-polyglot';
 import fastifyMultilingual from '../index.js';
 
-export default fp(async function (fastify: FastifyInstance, opts: FastifyPluginOptions) {
+const plugin: (fastify: FastifyInstance, opts: any) => Promise<void> = fastifyPlugin(async function (fastify: FastifyInstance, opts: any):Promise<void> {
   fastify.register(fastifyMultilingual, opts);
 
   fastify.get('/', async function (request:FastifyRequest, reply:FastifyReply) {
@@ -15,4 +13,19 @@ export default fp(async function (fastify: FastifyInstance, opts: FastifyPluginO
       .status(200)
       .send({ hi: polyglot.t('hi'), not_found: polyglot.t('not_found') });
   });
+
+  fastify.get('/nested', async function (request:FastifyRequest, reply:FastifyReply) {
+    const polyglot : Polyglot = request.polyglot();
+    return reply
+      .status(200)
+      .send({
+        hi: polyglot.t('hi'),
+        not_found: polyglot.t('not_found'),
+        nested: {
+          other: polyglot.t('nested.other')
+        }
+      });
+  });
 });
+
+export default plugin;

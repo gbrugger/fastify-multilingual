@@ -1,7 +1,11 @@
 import { NestedPhrases } from '../../dist/plugin.js'; // fastify-multilingual
 
-// Named export
 export const phrases: NestedPhrases = {
-  hi: 'Hi',
-  not_found: 'Page not found',
+  greeting: {
+    hi: 'Olá',
+  },
+  404: {
+    not_found: 'Página não encontrada',
+  },
+  other: 'Não aninhado',
 };

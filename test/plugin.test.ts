@@ -4,7 +4,7 @@ import { test } from 'node:test';
 import { phrases } from './i18n/index.js';
 
 // Node.js test runner adds exit listeners on t.after(() => fastify.close()). The default of 10 is not enough.
-process.setMaxListeners(0);
+process.setMaxListeners(20);
 
 const logger = {
   transport: {
@@ -14,7 +14,7 @@ const logger = {
     },
   },
 };
-const argv = ['test/app.js'];
+const argv = ['test-build/app.js'];
 
 test('plugin  - cases with default Locale', async t => {
   t.plan(5);
@@ -278,8 +278,70 @@ test('plugin - Edge Cases', async t => {
   });
 });
 
+test('plugin - nested phrases', async t => {
+  t.plan(1);
+
+  const options = {
+    multilingual: {
+      phrases,
+      defaultLocale: 'en'
+    },
+    skipOverride: false
+  };
+
+  await t.test('should handle nested phrase values', async () => {
+    const fastify = await build(argv, options, { logger });
+    t.after(() => fastify.close());
+
+    const enGB = {
+      hi: 'Hi',
+      not_found: 'Page not found',
+      nested: {
+        other: 'Other nested value'
+      }
+    };
+
+    const response = await fastify.inject({
+      method: 'GET',
+      url: '/nested',
+      headers: {
+        'content-type': 'application/json; charset=utf-8',
+        'accept-language': 'en-GB',
+      }
+    });
+    assert.strictEqual(response.statusCode, 200);
+    assert.deepStrictEqual(response.json(), enGB);
+  });
+});
+
 test('plugin - Configuration Edge Cases', async t => {
-  t.plan(2);
+  t.plan(3);
+
+  await t.test('should emit warning when no phrases are provided', async () => {
+    let warningOutput = '';
+    const originalStderr = process.stderr.write;
+    process.stderr.write = (chunk: any) => {
+      warningOutput += chunk.toString();
+      return true;
+    };
+
+    const emptyOptions = {
+      multilingual: {
+        phrases: {},
+        defaultLocale: 'en'
+      },
+      skipOverride: false
+    };
+
+    const fastify = await build(argv, emptyOptions, { logger });
+    t.after(() => {
+      fastify.close();
+      process.stderr.write = originalStderr;
+    });
+
+    assert.ok(warningOutput.includes('No phrases provided to fastify-multilingual. Will return keys.'));
+    assert.ok(warningOutput.includes('FST_ML_WARN_NO_PHRASES'));
+  });
 
   await t.test('should handle empty phrases object', async () => {
     const emptyOptions = {
@@ -339,3 +401,5 @@ test('plugin - Configuration Edge Cases', async t => {
     assert.deepStrictEqual(response.json(), fallback);
   });
 });
+
+// @TODO: Create another app to add a test where the plugin is registered twice.
