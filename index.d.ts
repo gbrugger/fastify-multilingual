@@ -1,5 +1,6 @@
-import fp from 'fastify-plugin';
-import fastifyMultilingual, { NestedPhrases } from './dist/plugin.js';
-declare const _default: ReturnType<typeof fp>;
-export default _default;
-export { fastifyMultilingual, NestedPhrases };
+import { FastifyInstance } from 'fastify';
+import { MultilingualPluginOptions, NestedPhrases } from './dist/plugin.js';
+declare const plugin: (fastify: FastifyInstance, options: MultilingualPluginOptions) => Promise<void>;
+export { MultilingualPluginOptions, NestedPhrases, plugin };
+export default plugin;
+//# sourceMappingURL=index.d.ts.map

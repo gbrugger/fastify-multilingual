@@ -1,9 +1,9 @@
 import fp from 'fastify-plugin';
 import fastifyMultilingual from './dist/plugin.js';
-
-export default fp(fastifyMultilingual, {
-  fastify: '5.x',
-  name: 'fastify-multilingual',
+const plugin = fp(fastifyMultilingual, {
+    fastify: '^5.x',
+    name: 'fastify-multilingual',
 });
-
-export { fastifyMultilingual };
+export { plugin };
+export default plugin;
+//# sourceMappingURL=index.js.map
