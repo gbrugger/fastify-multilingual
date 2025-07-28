@@ -2,7 +2,7 @@
 
 [![neostandard javascript style](https://img.shields.io/badge/code_style-neostandard-brightgreen?style=flat)](https://github.com/neostandard/neostandard)
 [![CI](https://github.com/gbrugger/fastify-multilingual/actions/workflows/node.js.yml/badge.svg)](https://github.com/gbrugger/fastify-multilingual/actions/workflows/node.js.yml)
-[![npm version](https://badge.fury.io/js/fastify-multilingual.svg)](https://badge.fury.io/js/fastify-multilingual)
+![NPM Version](https://img.shields.io/npm/v/fastify-multilingual)
 
 A Fastify plugin that decorates requests with internationalization (i18n) capabilities using [Polyglot.js](https://airbnb.io/polyglot.js/). The plugin automatically detects user language preferences from `Accept-Language` headers and provides localized phrases with support for pluralization and nested phrase structures.
 
