@@ -7,6 +7,9 @@
     {
       "path": "../tsconfig-src.json"
     },
+    {
+      "path": "../tsconfig-root.json"
+    },
   ],
   "include": [
     "**/*"

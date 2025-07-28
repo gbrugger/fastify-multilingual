@@ -1,11 +1,11 @@
 // When using fastify-cli app script with autoload, just put this file inside plugins directory
 
-import { FastifyInstance, FastifyPluginOptions } from 'fastify';
+import { FastifyInstance, FastifyRegisterOptions } from 'fastify';
 
 import fastifyPlugin from 'fastify-plugin';
-import fastifyMultilingual from '../../index.js'; // 'fastify-multiligual'
+import fastifyMultilingual, { MultilingualPluginOptions } from '../../index.js'; // 'fastify-multiligual'
 
-const plugin: (fastify: FastifyInstance, opts: FastifyPluginOptions) => Promise<void> = fastifyPlugin(async function (fastify: FastifyInstance, opts: FastifyPluginOptions): Promise<void> {
+const plugin: (fastify: FastifyInstance, opts: FastifyRegisterOptions<MultilingualPluginOptions>) => Promise<void> = fastifyPlugin(async function (fastify: FastifyInstance, opts: FastifyRegisterOptions<MultilingualPluginOptions>): Promise<void> {
   fastify.register(fastifyMultilingual, opts);
 });
 
