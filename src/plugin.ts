@@ -26,10 +26,6 @@ interface MultilingualPluginOptions extends FastifyPluginOptions {
   }
 }
 
-// @TODO:
-// Write README.md with fastify-cli
-// Setup CI with Github Actions
-
 const fastifyMultilingual = async (fastify: FastifyInstance, options: MultilingualPluginOptions): Promise<void> => {
   // Empty, ultimate fallback instance (returns keys as messages)
   const polyglot = new Polyglot({ phrases: {} as NestedPhrases });
@@ -39,7 +35,7 @@ const fastifyMultilingual = async (fastify: FastifyInstance, options: Multilingu
   }
 
   // Load dictionaries from the specified directory
-  const phrases = options.multilingual.phrases;
+  const phrases = options?.multilingual?.phrases || {};
 
   if (Object.keys(phrases).length === 0) {
     const warning = createWarning({
@@ -89,7 +85,7 @@ const fastifyMultilingual = async (fastify: FastifyInstance, options: Multilingu
         polyglotLocale =
           findLocale(preferredLocales, availableLocales);
       }
-      polyglotLocale = polyglotLocale || options.multilingual.defaultLocale;
+      polyglotLocale = polyglotLocale || options?.multilingual?.defaultLocale;
 
       // Appends the Polyglot object found to this request, else keeps the fallback.
       if (polyglotLocale) {

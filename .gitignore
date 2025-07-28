@@ -74,3 +74,8 @@ example-build
 
 CLAUDE.md
 .claude
+
+index.js
+index.js.map
+index.d.ts
+index.d.ts.map

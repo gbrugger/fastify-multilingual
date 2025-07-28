@@ -8,7 +8,7 @@
   "scripts": {
     "build": "tsc --build",
     "build:clean": "tsc --build --clean",
-    "test": "node --test test-build/*.test.js",
+    "test": "npm run build && node --test test-build/*.test.js",
     "example": "npm run build && node example-build/plugin/app.js",
     "example:get": "for lang in en it pt de; do curl -s localhost:3000/ -H \"accept-language: $lang\"|jq; done"
   },
@@ -37,7 +37,7 @@
     "@types/node-polyglot": "^2.5.0",
     "@typescript-eslint/eslint-plugin": "^8.37.0",
     "@typescript-eslint/parser": "^8.37.0",
-    "eslint": "^9.31.0",
+    "eslint": "^9.32.0",
     "fastify": "^5.4.0",
     "fastify-cli": "^7.4.0",
     "globals": "^16.3.0",

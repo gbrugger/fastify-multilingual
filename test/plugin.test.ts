@@ -402,6 +402,35 @@ test('plugin - Configuration Edge Cases', async t => {
   });
 });
 
+test('plugin - Missing multilingual options', async t => {
+  t.plan(1);
+
+  await t.test('should handle when multilingual options are not passed', async () => {
+    const options = {
+      skipOverride: false
+    };
+
+    const fastify = await build(argv, options, { logger });
+    t.after(() => fastify.close());
+
+    const fallback = {
+      hi: 'hi',
+      not_found: 'not_found'
+    };
+
+    const response = await fastify.inject({
+      method: 'GET',
+      url: '/',
+      headers: {
+        'content-type': 'application/json; charset=utf-8',
+        'accept-language': 'en',
+      }
+    });
+    assert.strictEqual(response.statusCode, 200);
+    assert.deepStrictEqual(response.json(), fallback);
+  });
+});
+
 test('plugin - Double Registration', async t => {
   t.plan(2);
 
