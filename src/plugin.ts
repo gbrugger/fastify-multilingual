@@ -19,12 +19,12 @@ declare module 'fastify' {
   }
 }
 
-interface MultilingualPluginOptions extends FastifyPluginOptions {
+type MultilingualPluginOptions = FastifyPluginOptions & {
   multilingual : {
     phrases: NestedPhrases;
     defaultLocale: string | null;
   }
-}
+};
 
 const fastifyMultilingual = async (fastify: FastifyInstance, options: MultilingualPluginOptions): Promise<void> => {
   // Empty, ultimate fallback instance (returns keys as messages)

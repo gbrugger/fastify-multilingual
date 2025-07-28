@@ -1,10 +1,10 @@
-import { FastifyInstance, FastifyRegisterOptions, FastifyReply, FastifyRequest } from 'fastify';
+import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 
 import fastifyPlugin from 'fastify-plugin';
 import Polyglot from 'node-polyglot';
 import fastifyMultilingual, { MultilingualPluginOptions } from '../index.js';
 
-const plugin: (fastify: FastifyInstance, opts: FastifyRegisterOptions<MultilingualPluginOptions>) => Promise<void> = fastifyPlugin(async function (fastify: FastifyInstance, opts: FastifyRegisterOptions<MultilingualPluginOptions>):Promise<void> {
+const plugin: (fastify: FastifyInstance, opts: MultilingualPluginOptions) => Promise<void> = fastifyPlugin(async function (fastify: FastifyInstance, opts: MultilingualPluginOptions):Promise<void> {
   fastify.register(fastifyMultilingual, opts);
 
   fastify.get('/', async function (request:FastifyRequest, reply:FastifyReply) {
