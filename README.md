@@ -302,6 +302,31 @@ curl -H "Accept-Language: de" http://localhost:3000/
 
 ## Development
 
+### Using with Dev Containers
+
+This project supports [Development Containers](https://containers.dev/) for a consistent development environment. The devcontainer configuration includes Node.js 20, npm, and all necessary development tools.
+
+**Using with VS Code:**
+1. Install the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
+2. Open the project in VS Code
+3. When prompted, click "Reopen in Container" or use `Ctrl+Shift+P` → "Dev Containers: Reopen in Container"
+4. VS Code will build the container and install dependencies automatically
+
+**Using with GitHub Codespaces:**
+1. Navigate to the repository on GitHub
+2. Click the green "Code" button → "Codespaces" tab → "Create codespace on main"
+3. The environment will be ready with all dependencies installed
+
+**Manual setup in any devcontainer-compatible environment:**
+```bash
+# The container will automatically run these commands:
+npm install                # Install dependencies
+npm run build             # Build the project
+npm test                  # Verify everything works
+```
+
+Once inside the devcontainer, you can use all the standard development commands like `npm run example`, `npm test`, and `npm run build` as documented below.
+
 ### Building
 
 ```bash
