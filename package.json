@@ -9,6 +9,7 @@
     "build": "tsc --build",
     "build:clean": "tsc --build --clean",
     "test": "node --test test-build/**/*.test.js",
+    "debug": "echo 'Current directory:' && pwd && echo 'Directory contents:' && ls -la && echo 'test-build directory:' && ls -la test-build/ 2>/dev/null || echo 'test-build directory does not exist'",
     "example": "npm run build && node example-build/plugin/app.js",
     "example:get": "for lang in en it pt de; do curl -s localhost:3000/ -H \"accept-language: $lang\"|jq; done"
   },
