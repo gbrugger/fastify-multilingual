@@ -106,4 +106,4 @@ const fastifyMultilingual = async (fastify: FastifyInstance, options: Multilingu
 export type { NestedPhrases };
 
 export default fastifyMultilingual;
-export { fastifyMultilingual };
+export { fastifyMultilingual, MultilingualPluginOptions };
