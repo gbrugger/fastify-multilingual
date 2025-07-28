@@ -61,7 +61,7 @@ profile*
 
 *.txt
 
-package-lock.json
+# package-lock.json
 dist
 
 # TypeScript build info
