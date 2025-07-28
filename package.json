@@ -22,6 +22,9 @@
   ],
   "author": "Guilherme D'Amato",
   "license": "MIT",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/gbrugger/fastify-multilingual.git"
