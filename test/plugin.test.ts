@@ -1,10 +1,10 @@
+import { EventEmitter } from 'events';
 import { build } from 'fastify-cli/helper.js';
 import assert from 'node:assert';
 import { test } from 'node:test';
 import { phrases } from './i18n/index.js';
 
-// Node.js test runner adds exit listeners on t.after(() => fastify.close()). The default of 10 is not enough.
-process.setMaxListeners(20);
+EventEmitter.defaultMaxListeners = 20;
 
 const logger = {
   transport: {
@@ -22,7 +22,7 @@ test('plugin  - cases with default Locale', async t => {
   const options = {
     multilingual: {
       phrases,
-      defaultLocale: 'en'
+      defaultTranslation: 'en'
     },
     skipOverride: false // If you want your application to be registered with fastify-plugin
   };
@@ -209,7 +209,7 @@ test('plugin - Edge Cases', async t => {
   const options = {
     multilingual: {
       phrases,
-      defaultLocale: 'en'
+      defaultTranslation: 'en'
     },
     skipOverride: false
   };
@@ -284,7 +284,7 @@ test('plugin - nested phrases', async t => {
   const options = {
     multilingual: {
       phrases,
-      defaultLocale: 'en'
+      defaultTranslation: 'en'
     },
     skipOverride: false
   };
@@ -328,7 +328,7 @@ test('plugin - Configuration Edge Cases', async t => {
     const emptyOptions = {
       multilingual: {
         phrases: {},
-        defaultLocale: 'en'
+        defaultTranslation: 'en'
       },
       skipOverride: false
     };
@@ -347,7 +347,7 @@ test('plugin - Configuration Edge Cases', async t => {
     const emptyOptions = {
       multilingual: {
         phrases: {},
-        defaultLocale: 'en'
+        defaultTranslation: 'en'
       },
       skipOverride: false
     };
@@ -372,11 +372,11 @@ test('plugin - Configuration Edge Cases', async t => {
     assert.deepStrictEqual(response.json(), fallback);
   });
 
-  await t.test('should handle defaultLocale as empty string', async () => {
+  await t.test('should handle defaultTranslation as empty string', async () => {
     const emptyDefaultOptions = {
       multilingual: {
         phrases,
-        defaultLocale: ''
+        defaultTranslation: ''
       },
       skipOverride: false
     };
@@ -444,15 +444,15 @@ test('plugin - Double Registration', async t => {
       await fastify.register(import('../index.js'), {
         multilingual: {
           phrases,
-          defaultLocale: 'en'
+          defaultTranslation: 'en'
         }
       });
 
       // Route in English context
       fastify.get('/en-context', async (request) => {
         return {
-          hi: request.polyglot().t('hi'),
-          not_found: request.polyglot().t('not_found')
+          hi: request.polyglot.t('hi'),
+          not_found: request.polyglot.t('not_found')
         };
       });
     });
@@ -462,15 +462,15 @@ test('plugin - Double Registration', async t => {
       await fastify.register(import('../index.js'), {
         multilingual: {
           phrases,
-          defaultLocale: 'it'
+          defaultTranslation: 'it'
         }
       });
 
       // Route in Italian context
       fastify.get('/it-context', async (request) => {
         return {
-          hi: request.polyglot().t('hi'),
-          not_found: request.polyglot().t('not_found')
+          hi: request.polyglot.t('hi'),
+          not_found: request.polyglot.t('not_found')
         };
       });
     });
@@ -509,7 +509,7 @@ test('plugin - Double Registration', async t => {
     await app.register(import('../index.js'), {
       multilingual: {
         phrases,
-        defaultLocale: 'en'
+        defaultTranslation: 'en'
       }
     });
 
@@ -517,15 +517,15 @@ test('plugin - Double Registration', async t => {
     await app.register(import('../index.js'), {
       multilingual: {
         phrases,
-        defaultLocale: 'it'
+        defaultTranslation: 'it'
       }
     });
 
     // Add a route to test the multilingual functionality
     app.get('/test', async (request) => {
       return {
-        hi: request.polyglot().t('hi'),
-        not_found: request.polyglot().t('not_found')
+        hi: request.polyglot.t('hi'),
+        not_found: request.polyglot.t('not_found')
       };
     });
 

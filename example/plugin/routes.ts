@@ -5,9 +5,9 @@ import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import Polyglot from 'node-polyglot';
 
 export default async (fastify: FastifyInstance):Promise<void> => {
-  // Routes can also be registered in its own file(s)
   fastify.get('/', async function (request:FastifyRequest, reply:FastifyReply) {
-    const polyglot : Polyglot = request.polyglot();
+    const { polyglot } : { polyglot: Polyglot } = request;
+
     return reply
       .status(200)
       .send({
@@ -19,7 +19,8 @@ export default async (fastify: FastifyInstance):Promise<void> => {
   });
 
   fastify.get('/404', async function (request:FastifyRequest, reply:FastifyReply) {
-    const polyglot : Polyglot = request.polyglot();
+    const { polyglot } : { polyglot: Polyglot } = request;
+
     return reply
       .status(404)
       .send({
