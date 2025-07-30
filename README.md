@@ -19,7 +19,7 @@ A Fastify plugin that decorates requests with internationalization (i18n) capabi
 
 | Plugin Version | Fastify Version | Node.js Version |
 | -------------- | --------------- | --------------- |
-| `^0.1.0`       | `^5.0.0`        | `>=20.0.0`      |
+| `1.x.x`       | `^5.0.0`        | `>=20.0.0`      |
 
 ## Installation
 
@@ -186,7 +186,7 @@ await app.register(fastifyMultilingual, {
 
 // TypeScript route with proper typing
 app.get('/', async (request: FastifyRequest, reply: FastifyReply) => {
-  const { polyglot } : { polyglot: Polyglot } = request;
+  const { polyglot } = request;
   
   return {
     message: polyglot.t('greeting.hi'),
@@ -231,7 +231,7 @@ The plugin decorates the Fastify request object with the following properties:
 
 ### `request.polyglot`
 
-Returns a Polyglot instance configured for the user's detected locale.
+Returns a Polyglot instance configured for the user's detected locale, as set in the `onRequest` hook.
 
 ```javascript
 const polyglot = request.polyglot;

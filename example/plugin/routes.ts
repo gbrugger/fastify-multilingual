@@ -2,11 +2,9 @@
 
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 
-import Polyglot from 'node-polyglot';
-
 export default async (fastify: FastifyInstance):Promise<void> => {
   fastify.get('/', async function (request:FastifyRequest, reply:FastifyReply) {
-    const { polyglot } : { polyglot: Polyglot } = request;
+    const { polyglot } = request;
 
     return reply
       .status(200)
@@ -19,7 +17,7 @@ export default async (fastify: FastifyInstance):Promise<void> => {
   });
 
   fastify.get('/404', async function (request:FastifyRequest, reply:FastifyReply) {
-    const { polyglot } : { polyglot: Polyglot } = request;
+    const { polyglot } = request;
 
     return reply
       .status(404)
