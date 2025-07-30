@@ -1,8 +1,8 @@
-import { FastifyInstance } from 'fastify';
+import { FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
 import fastifyMultilingual, { MultilingualPluginOptions, NestedPhrases } from './dist/plugin.js';
 
-const plugin: (fastify: FastifyInstance, options: MultilingualPluginOptions) => Promise<void> = fp(fastifyMultilingual, {
+const plugin: FastifyPluginAsync<MultilingualPluginOptions> = fp(fastifyMultilingual, {
   fastify: '^5.x',
   name: 'fastify-multilingual',
 });

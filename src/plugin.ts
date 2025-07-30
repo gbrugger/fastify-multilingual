@@ -28,7 +28,7 @@ interface MultilingualPluginOptions extends FastifyPluginOptions {
   }
 }
 
-const fastifyMultilingual: FastifyPluginAsync<MultilingualPluginOptions> = async function (fastify: FastifyInstance, options: MultilingualPluginOptions): Promise<void> {
+const fastifyMultilingual: FastifyPluginAsync<MultilingualPluginOptions> = async function (fastify: FastifyInstance, options: MultilingualPluginOptions) {
   if (!fastify.hasRequestDecorator('currentTranslation')) {
     fastify.decorateRequest('currentTranslation', '');
   }

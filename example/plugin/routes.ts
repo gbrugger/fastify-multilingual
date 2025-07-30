@@ -1,8 +1,8 @@
 // When using fastify-cli app script with autoload, just put this file inside plugins directory
 
-import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
+import { FastifyInstance, FastifyPluginAsync, FastifyReply, FastifyRequest } from 'fastify';
 
-export default async (fastify: FastifyInstance):Promise<void> => {
+export const routes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
   fastify.get('/', async function (request:FastifyRequest, reply:FastifyReply) {
     const { polyglot } = request;
 
@@ -28,3 +28,5 @@ export default async (fastify: FastifyInstance):Promise<void> => {
       });
   });
 };
+
+export default routes;
