@@ -5,7 +5,7 @@ import { findLocale } from './util.js';
 
 const { createWarning } = pkg;
 
-type PolyglotGetter = () => Polyglot;
+// type PolyglotGetter = () => Polyglot;
 
 type NestedPhrases = {
   [key: string]: string | NestedPhrases;
@@ -13,25 +13,35 @@ type NestedPhrases = {
 
 declare module 'fastify' {
   interface FastifyRequest {
-    availableLocales: string;
-    polyglot: PolyglotGetter;
-    [key: `polyglot-${string}`]: PolyglotGetter;
+    availableTranslations: string;
+    currentTranslation: string,
+    _polyglot: Polyglot;
+    polyglot: Polyglot;
+    [key: `polyglot-${string}`]: Polyglot;
   }
 }
 
 interface MultilingualPluginOptions extends FastifyPluginOptions {
   multilingual : {
     phrases: NestedPhrases;
-    defaultLocale: string | null;
+    defaultTranslation: string | null;
   }
 }
 
-const fastifyMultilingual: FastifyPluginAsync<MultilingualPluginOptions> = async (fastify: FastifyInstance, options: MultilingualPluginOptions): Promise<void> => {
-  // Empty, ultimate fallback instance (returns keys as messages)
-  const polyglot = new Polyglot({ phrases: {} as NestedPhrases });
+const fastifyMultilingual: FastifyPluginAsync<MultilingualPluginOptions> = async function (fastify: FastifyInstance, options: MultilingualPluginOptions): Promise<void> {
+  if (!fastify.hasRequestDecorator('currentTranslation')) {
+    fastify.decorateRequest('currentTranslation', '');
+  }
 
-  if (!fastify.hasRequestDecorator('polyglot')) {
-    fastify.decorateRequest('polyglot', () => polyglot);
+  // Empty, ultimate fallback instance (returns keys as messages)
+  const _polyglot = new Polyglot({ phrases: {} as NestedPhrases });
+
+  if (!fastify.hasRequestDecorator('_polyglot')) {
+    fastify.decorateRequest('_polyglot', {
+      getter () {
+        return _polyglot;
+      }
+    });
   }
 
   // Load dictionaries from the specified directory
@@ -46,29 +56,47 @@ const fastifyMultilingual: FastifyPluginAsync<MultilingualPluginOptions> = async
     warning();
   }
 
-  const availableLocales = Object.keys(phrases)
+  const availableTranslations = Object.keys(phrases)
     .map((key) => key.replace('_', '-'))
     .join(',');
-  if (!fastify.hasRequestDecorator('availableLocales')) {
-    fastify.decorateRequest('availableLocales', availableLocales);
+  if (!fastify.hasRequestDecorator('availableTranslations')) {
+    fastify.decorateRequest('availableTranslations', availableTranslations);
   }
 
   Object.entries(phrases).forEach(([localeKey, phrases]) => {
     const locale = localeKey.replace('_', '-');
     if (!fastify.hasRequestDecorator(`polyglot-${locale}`)) {
-      const polyglot = new Polyglot({
+      const polyglotWithLocale = new Polyglot({
         phrases,
         locale,
       });
-      fastify.decorateRequest(`polyglot-${locale}`, () => polyglot);
+      fastify.decorateRequest(`polyglot-${locale}`, {
+        getter () {
+          return polyglotWithLocale;
+        }
+      });
     }
   });
 
-  // Pick the right Polyglot instance for each request, based on the Accept-Language header
-  fastify.addHook('onRequest', async (request: FastifyRequest) => {
-    const availableLocales = request.availableLocales.split(',').filter(locale => locale.length > 0);
+  if (!fastify.hasRequestDecorator('polyglot')) {
+    fastify.decorateRequest('polyglot', {
+      getter () {
+        if (this.currentTranslation) {
+          const polyglot = this.getDecorator<Polyglot | null>(`polyglot-${this.currentTranslation}`);
+          if (polyglot) {
+            return polyglot;
+          }
+        }
+        return this._polyglot;
+      }
+    });
+  }
 
-    if (availableLocales.length > 0) {
+  // Pick the right Polyglot translation for each request, based on the Accept-Language header
+  fastify.addHook('onRequest', async function (request: FastifyRequest) {
+    const availableTranslations = request.availableTranslations.split(',').filter(locale => locale.length > 0);
+
+    if (availableTranslations.length > 0) {
       const acceptLanguage = request.headers['accept-language'];
 
       let polyglotLocale: string | null = null;
@@ -83,17 +111,13 @@ const fastifyMultilingual: FastifyPluginAsync<MultilingualPluginOptions> = async
         // The locales must be searched in the order of preference,
         // but the returned locale must the one that matches the preferred locale from the available ones.
         polyglotLocale =
-          findLocale(preferredLocales, availableLocales);
+          findLocale(preferredLocales, availableTranslations);
       }
-      polyglotLocale = polyglotLocale || options?.multilingual?.defaultLocale;
+      polyglotLocale = polyglotLocale || options?.multilingual?.defaultTranslation;
 
-      // Appends the Polyglot object found to this request, else keeps the fallback.
+      // Appends the translation found to this request, else keeps the fallback.
       if (polyglotLocale) {
-        const polyglotGetter = request.getDecorator<PolyglotGetter | null>(`polyglot-${polyglotLocale}`);
-        if (polyglotGetter) {
-          // request.polyglot = polyglotGetter;
-          request.setDecorator<PolyglotGetter>('polyglot', polyglotGetter);
-        }
+        request.currentTranslation = polyglotLocale;
       }
     }
   });

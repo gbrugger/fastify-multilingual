@@ -21,7 +21,7 @@ const app = fastify({
 const options = {
   multilingual: {
     phrases,
-    defaultLocale: 'en'
+    defaultTranslation: 'en'
   },
 };
 

@@ -60,18 +60,18 @@ const phrases = {
 await fastify.register(require('fastify-multilingual'), {
   multilingual: {
     phrases,
-    defaultLocale: 'en'
+    defaultTranslation: 'en'
   }
 });
 
 // Use in routes
 fastify.get('/', async (request, reply) => {
-  const polyglot = request.polyglot();
+  const polyglot = request.polyglot;
   
   return {
     message: polyglot.t('greeting.hi'),
     welcome: polyglot.t('greeting.welcome', { name: 'World' }),
-    availableLocales: request.availableLocales
+    availableTranslations: request.availableTranslations
   };
 });
 
@@ -147,7 +147,7 @@ const app = fastify({ logger: true });
 await app.register(fastifyMultilingual, {
   multilingual: {
     phrases,
-    defaultLocale: 'en'
+    defaultTranslation: 'en'
   }
 });
 ```
@@ -180,18 +180,18 @@ const phrases: NestedPhrases = {
 await app.register(fastifyMultilingual, {
   multilingual: {
     phrases,
-    defaultLocale: 'en'
+    defaultTranslation: 'en'
   }
 });
 
 // TypeScript route with proper typing
 app.get('/', async (request: FastifyRequest, reply: FastifyReply) => {
-  const polyglot = request.polyglot();
+  const { polyglot } : { polyglot: Polyglot } = request;
   
   return {
     message: polyglot.t('greeting.hi'),
     welcome: polyglot.t('greeting.welcome', { name: 'TypeScript' }),
-    availableLocales: request.availableLocales
+    availableTranslations: request.availableTranslations
   };
 });
 ```
@@ -205,7 +205,7 @@ The plugin accepts the following options:
 | Property        | Type     | Required | Description |
 | --------------- | -------- | -------- | ----------- |
 | `phrases`       | `NestedPhrases` | Yes | Object containing locale-keyed phrase objects |
-| `defaultLocale` | `string \| null` | Yes | Fallback locale when user's preferred locale is unavailable |
+| `defaultTranslation` | `string \| null` | Yes | Fallback locale when user's preferred locale is unavailable |
 
 ### Phrases Structure
 
@@ -229,30 +229,30 @@ The `phrases` object supports nested structures:
 
 The plugin decorates the Fastify request object with the following properties:
 
-### `request.polyglot()`
+### `request.polyglot`
 
 Returns a Polyglot instance configured for the user's detected locale.
 
 ```javascript
-const polyglot = request.polyglot();
+const polyglot = request.polyglot;
 const message = polyglot.t('greeting.hi');
 ```
 
-### `request.availableLocales`
+### `request.availableTranslations`
 
 String containing comma-separated list of available locales.
 
 ```javascript
-console.log(request.availableLocales); // "en,it,pt-BR"
+console.log(request.availableTranslations); // "en,it,pt-BR"
 ```
 
-### `request['polyglot-{locale}']()`
+### `request['polyglot-{locale}']`
 
 Access polyglot instances for specific locales:
 
 ```javascript
-const englishPolyglot = request['polyglot-en']();
-const italianPolyglot = request['polyglot-it']();
+const englishPolyglot = request['polyglot-en'];
+const italianPolyglot = request['polyglot-it'];
 ```
 
 ## Locale Detection
@@ -261,8 +261,8 @@ The plugin automatically detects the user's preferred locale using the following
 
 1. Parse `Accept-Language` header
 2. Match against available locales (exact match first, then language family)
-3. Fall back to `defaultLocale`
-4. If no default locale, return key-based responses
+3. Fall back to `defaultTranslation`
+4. If no default translation, return key-based responses
 
 Example `Accept-Language` header processing:
 - `en-US,en;q=0.9,it;q=0.8` → Prefers `en-US`, falls back to `en`, then `it`
