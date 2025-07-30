@@ -1,4 +1,4 @@
-import { FastifyInstance, FastifyPluginOptions, FastifyRequest } from 'fastify';
+import { FastifyInstance, FastifyPluginAsync, FastifyPluginOptions, FastifyRequest } from 'fastify';
 import Polyglot from 'node-polyglot';
 import pkg from 'process-warning';
 import { findLocale } from './util.js';
@@ -19,14 +19,14 @@ declare module 'fastify' {
   }
 }
 
-type MultilingualPluginOptions = FastifyPluginOptions & {
+interface MultilingualPluginOptions extends FastifyPluginOptions {
   multilingual : {
     phrases: NestedPhrases;
     defaultLocale: string | null;
   }
-};
+}
 
-const fastifyMultilingual = async (fastify: FastifyInstance, options: MultilingualPluginOptions): Promise<void> => {
+const fastifyMultilingual: FastifyPluginAsync<MultilingualPluginOptions> = async (fastify: FastifyInstance, options: MultilingualPluginOptions): Promise<void> => {
   // Empty, ultimate fallback instance (returns keys as messages)
   const polyglot = new Polyglot({ phrases: {} as NestedPhrases });
 
