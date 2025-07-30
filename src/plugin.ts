@@ -5,8 +5,6 @@ import { findLocale } from './util.js';
 
 const { createWarning } = pkg;
 
-// type PolyglotGetter = () => Polyglot;
-
 type NestedPhrases = {
   [key: string]: string | NestedPhrases;
 };
