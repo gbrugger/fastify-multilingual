@@ -1,6 +1,6 @@
 {
   "name": "fastify-multilingual",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Fastify plugin to decorate the request with different translations, based on available Polyglot.js phrases.",
   "main": "index.js",
   "types": "index.d.ts",
