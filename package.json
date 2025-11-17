@@ -1,6 +1,6 @@
 {
   "name": "fastify-multilingual",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Fastify plugin to decorate the request with different translations, based on available Polyglot.js phrases.",
   "main": "index.js",
   "types": "index.d.ts",
@@ -35,8 +35,8 @@
     "@tsconfig/node20": "^20.1.6",
     "@types/node": "^24.0.15",
     "@types/node-polyglot": "^2.5.0",
-    "@typescript-eslint/eslint-plugin": "^8.37.0",
-    "@typescript-eslint/parser": "^8.37.0",
+    "@typescript-eslint/eslint-plugin": "^8.46.2",
+    "@typescript-eslint/parser": "^8.46.2",
     "eslint": "^9.32.0",
     "fastify": "^5.4.0",
     "fastify-cli": "^7.4.0",
